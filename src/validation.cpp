@@ -1300,13 +1300,10 @@ CAmount GetBlockSubsidy( const CBlockHeader& block)
     //Sanity checks
     assert( nP1_bitsize > 1 );
 
-    // For a given bitsize b, consider all the semi-primes whose factors have exactly b digits in binary.
-    // Then, ~60% of these semiprimes are of bitsize 2b and 40% are of bitsize 2b-1. These values were
-    // observed heuristically, and it means for odd 'nBits' on the blockchain we can demand b digit factors
-    // as they are abundant enough(40%) and reward miners as if nBits was nBits + 1, because of that 10% scarcity.
-    //
-    // In this manner we balance the difficulty with a better reward than would have been otherwise given.
-    const uint16_t expected_bitsize = (block.nBits >> 1) + (block.nBits&1);
+    uint16_t expected_bitsize = (block.nBits >> 1) + (block.nBits&1);
+    if (block.nBits % 2 != 0) {
+        expected_bitsize -= 1;
+    }
 
     //Enforce that the given factor is of the expected size,
     //and hence implying they must be the same size.
